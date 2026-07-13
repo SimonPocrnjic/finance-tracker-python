@@ -1,15 +1,15 @@
 import hashlib
 import csv
-import datetime
 from models import Transaction
 from constants import DEFAULT_CSV_DELIMENTOR, CSV_COLUMN_MAPPER, DEFAULT_DECIMAL_SEPARATOR, DEFAULT_THOUSAND_SEPARATOR, DEFAULT_DATE_FORMAT
 from helpers import convert_date, convert_amount
+from categorizer import categorize
 
 def computed_id(date: str, amount: float, description: str) -> str:
     unique_key = f"{date}-{amount}-{description}".encode()
     return hashlib.sha256(unique_key).hexdigest()[:12]
 
-def import_csv(csv_path: str, existing_ids: set[str]) ->list[Transaction]:
+def import_csv(csv_path: str, existing_ids: set[str], rules: dict[str, str] = {}) -> list[Transaction]:
     transaction_list: list[Transaction] = []
     with open(csv_path, encoding="utf-8") as f:
         data = csv.DictReader(f, delimiter=DEFAULT_CSV_DELIMENTOR) 
@@ -38,7 +38,6 @@ def import_csv(csv_path: str, existing_ids: set[str]) ->list[Transaction]:
                 continue
             
             correct_date = convert_date(row[CSV_COLUMN_MAPPER["date"]], DEFAULT_DATE_FORMAT)
-            
             transaction = Transaction(
                 new_id,
                 correct_date,
@@ -47,6 +46,9 @@ def import_csv(csv_path: str, existing_ids: set[str]) ->list[Transaction]:
                 description,
                 row[CSV_COLUMN_MAPPER["account"]]
             )
+            
+            category = categorize(transaction.description, rules)
+            transaction.category = category or "Uncategorized"
             
             transaction_list.append(transaction)
             existing_ids.add(new_id)

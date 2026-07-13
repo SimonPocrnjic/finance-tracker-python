@@ -3,3 +3,4 @@ transactions_test.jsonl
 __pycache__
 TEST_BANK_DATA.csv
 constants.py
+rules.json
