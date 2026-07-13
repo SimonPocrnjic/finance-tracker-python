@@ -15,6 +15,7 @@ append-only log.
   modules — no third-party dependencies required for the core app).
 - Optional, for future reporting/testing features: `pytest` (tests),
   `matplotlib` (charts).
+- Rename / Copy constants_example.py > constants.py
 
 ## Running it
 
