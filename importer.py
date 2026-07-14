@@ -18,7 +18,7 @@ def import_csv(csv_path: str, existing_ids: set[str], rules: dict[str, str] = {}
             flow: str = "debit"
             
             if row[CSV_COLUMN_MAPPER["debit"]] != "" and row.get(CSV_COLUMN_MAPPER["debit"]) != None:
-                amount = convert_amount(row[CSV_COLUMN_MAPPER["debit"]], DEFAULT_THOUSAND_SEPARATOR, DEFAULT_DECIMAL_SEPARATOR)
+                amount = convert_amount(row[CSV_COLUMN_MAPPER["debit"]], DEFAULT_THOUSAND_SEPARATOR, DEFAULT_DECIMAL_SEPARATOR) * -1
             elif row[CSV_COLUMN_MAPPER["credit"]] != "" and row.get(CSV_COLUMN_MAPPER["debit"]) != None:
                 amount = convert_amount(row[CSV_COLUMN_MAPPER["credit"]], DEFAULT_THOUSAND_SEPARATOR, DEFAULT_DECIMAL_SEPARATOR)
                 flow = "credit"

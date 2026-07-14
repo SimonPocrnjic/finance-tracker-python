@@ -4,11 +4,24 @@ from models import Transaction
 from storage import load_all, overwrite_all
 from importer import import_csv
 from categorizer import load_rules, categorize, overwrite_rules
+from reports import monthly_summary, print_summary
 
 ACTIONS: list[str] = [
     "import_bank_csv",
-    "categorize_transactions"
+    "categorize_transactions",
+    "reporting"
 ]
+
+def reporting() -> None:
+    print("### Reporting system ###\n")
+    month = input("Type in month yyyy-mm: ")
+    transaction = load_all(PATH_TO_STORAGE)
+    summery = monthly_summary(transaction, month)
+    print(f"Report for month {month}: \n")
+    print_summary(summery)
+    print("\n### Reporting system ###\n")
+    
+    
 
 def choose_action() -> None:
     for i in range(0, len(ACTIONS)):
@@ -76,7 +89,7 @@ def main():
     choose_action()
     
     while True:
-        action = input("Enter between 0-2 (type 'h' for list): ")
+        action = input(f"Enter between 1-{len(ACTIONS)} (type 'h' for list): ")
         if action == '0':
             break
 
@@ -84,6 +97,8 @@ def main():
             import_bank_csv()
         elif action == '2':
             categorize_transactions()
+        elif action == '3':
+            reporting()
         elif action == 'h':
             choose_action()
         else:

@@ -16,6 +16,7 @@ append-only log.
 - Optional, for future reporting/testing features: `pytest` (tests),
   `matplotlib` (charts).
 - Rename / Copy constants_example.py > constants.py
+- Rename / Copy rules.example.json > rules.json
 
 ## Running it
 
