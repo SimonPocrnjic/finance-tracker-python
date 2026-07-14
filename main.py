@@ -1,16 +1,57 @@
+import json
 from pathlib import Path
 from constants import PATH_TO_STORAGE
 from models import Transaction
 from storage import load_all, overwrite_all
-from importer import import_csv
+from importer import import_csv, computed_id
 from categorizer import load_rules, categorize, overwrite_rules
 from reports import monthly_summary, print_summary
 
 ACTIONS: list[str] = [
     "import_bank_csv",
     "categorize_transactions",
-    "reporting"
+    "reporting",
+    "add_transaction"
 ]
+
+def add_trancation() -> None:
+    print("### Insert new transaction ###\n")
+    transactions = load_all(PATH_TO_STORAGE)
+    rules = load_rules("rules.json")
+    exists = False
+    
+    date = input("Enter date yyyy-mm-dd:\n")
+    amount = input("Enter amount:\n")
+    description = input("Enter description\n")
+    account = input("Enter account:\n")
+    
+    new_id = computed_id(date, amount, description)
+    
+    for t in transactions:
+        if new_id == t.id:
+            exists = True
+            break
+    
+    if exists:
+        print("Transaction already exists!")
+    else:
+        new_transaction = Transaction(
+            new_id,
+            date,
+            float(amount),
+            "Uncategorized",
+            description,
+            account
+        )
+        
+        category = categorize(new_transaction.description, rules)
+        new_transaction.category = category or "Uncategorized"
+        transactions.append(new_transaction)
+        overwrite_all(PATH_TO_STORAGE, transactions)
+        print("New entry inserted!")
+        print(json.dumps(new_transaction.to_dict()))
+        
+    print("\n### Finished inserting transaction ###\n")
 
 def reporting() -> None:
     print("### Reporting system ###\n")
@@ -19,8 +60,7 @@ def reporting() -> None:
     summery = monthly_summary(transaction, month)
     print(f"Report for month {month}: \n")
     print_summary(summery)
-    print("\n### Reporting system ###\n")
-    
+    print("\n### Finished reporting ###\n")
     
 
 def choose_action() -> None:
@@ -99,6 +139,8 @@ def main():
             categorize_transactions()
         elif action == '3':
             reporting()
+        elif action == '4':
+            add_trancation()
         elif action == 'h':
             choose_action()
         else:
